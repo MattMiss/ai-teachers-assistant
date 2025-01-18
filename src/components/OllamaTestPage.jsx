@@ -50,12 +50,13 @@ const OllamaTestPage = () => {
     let prompt = "Here are some questions about programming and answers from various people. Summarize each question based on the range of answers provided, and analyze what people generally think about each topic.\n\n";
 
     data.questions_and_answers.forEach((qa) => {
-      prompt += `Q: ${qa.question}\n`;
-      qa.answers.forEach((answer, idx) => {
-        prompt += `A${idx + 1}: ${answer}\n`;
-      });
-      prompt += "\n";
+        prompt += `Q: ${qa.question}\n`;
+        qa.answers.forEach((answer, idx) => {
+            prompt += `A${idx + 1} (User: ${answer.userId}): ${answer.response}\n`;
+        });
+        prompt += "\n";
     });
+    
 
     prompt += "Now, summarize each question based on the range of answers and analyze what people generally think about these topics.";
     return prompt;
