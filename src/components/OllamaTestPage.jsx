@@ -1,79 +1,123 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+
 import formattedTestData from "../data/formattedTestData";
+//import { generatePrompt } from "../utils/ai";
+import { ollamaApiLocal, fetchOllamaResponse } from "../utils/api";
+import { batchQuestions, generatePromptForBatch } from "../utils/ai";
 
 const OllamaTestPage = () => {
-  const [response, setResponse] = useState("");
-  const [loading, setLoading] = useState(false);
+    const [response, setResponse] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [apiUrl] = useState(ollamaApiLocal);
+    const [model, setModel] = useState("deepseek-r1:1.5b");
 
-  const handleTestOllama = async () => {
-    setLoading(true);
-    setResponse("");
-
-    const prompt = generatePrompt(formattedTestData);
-
-    try {
-      const res = await fetch("http://localhost:11434/api/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama3.2",
-          prompt,
-        }),
-      });
-
-      if (res.ok) {
-        const reader = res.body.getReader();
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
+    // const handleTestOllama = async () => {
+    //     setLoading(true);
+    //     setError("");
+    //     setResponse("");
         
-            const chunk = new TextDecoder("utf-8").decode(value);
-            const result = JSON.parse(chunk);
-            setResponse((prev) => prev + result.response || "");
+    //     const prompt = generatePrompt(formattedTestData);
+
+    //     await fetchOllamaResponse(
+    //         apiUrl, 
+    //         model, 
+    //         prompt, 
+    //         (newResponse) => setResponse(newResponse),  // Update response progressively
+    //         (errorMessage) => {
+    //             setError(errorMessage);  // Set the error message while keeping the response
+    //             setLoading(false);
+    //         },
+    //         () => setLoading(false) 
+    //     );
+    // }
+    
+    const handleTestBatchedOllama = async () => {
+        setLoading(true);
+        setError("");
+        setResponse("");
+    
+        const batchedQuestions = batchQuestions(formattedTestData.questions_and_answers, 5); // Batch size = 5 questions
+        console.log("BatchedQuestions: ", batchedQuestions);
+    
+        try {
+            for (const [index, batch] of batchedQuestions.entries()) {
+                const prompt = generatePromptForBatch(batch);
+    
+                console.log(`Processing batch ${index + 1}/${batchedQuestions.length}:`);
+                console.log("Prompt:", prompt);
+    
+                await fetchOllamaResponse(
+                    apiUrl,
+                    model,
+                    prompt,
+                    (newResponse) => setResponse((prevResponse) => prevResponse + newResponse),
+                    setError,
+                    () => setLoading(false)
+                );
+            }
+        } catch (error) {
+            console.error("Unexpected Error:", error);
+            setError(`An unexpected error occurred: ${error.message}`);
+        } finally {
+            setLoading(false);
         }
-        
-      } else {
-        const errorText = await res.text();
-        setResponse(`Error: ${res.status} - ${errorText}`);
-      }
-    } catch (error) {
-      setResponse(`Error: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const generatePrompt = (data) => {
-    let prompt = "Here are some questions about programming and answers from various people. Summarize each question based on the range of answers provided, and analyze what people generally think about each topic.\n\n";
-
-    data.questions_and_answers.forEach((qa) => {
-        prompt += `Q: ${qa.question}\n`;
-        qa.answers.forEach((answer, idx) => {
-            prompt += `A${idx + 1} (User: ${answer.userId}): ${answer.response}\n`;
-        });
-        prompt += "\n";
-    });
+    };
+    
     
 
-    prompt += "Now, summarize each question based on the range of answers and analyze what people generally think about these topics.";
-    return prompt;
-  };
-
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1>Test Ollama API</h1>
-      <button onClick={handleTestOllama} disabled={loading}>
-        {loading ? "Loading..." : "Test API"}
-      </button>
-      <div style={{ marginTop: "20px", whiteSpace: "pre-wrap" }}>
-        <h3>Response:</h3>
-        <p>{response || "No response yet."}</p>
-      </div>
-    </div>
-  );
+    return (
+        <div className="container">
+            <h1>Test Ollama API</h1>
+            <nav>
+                <Link to="/" className="nav-link">
+                    Go to Main Page
+                </Link>
+            </nav>
+    
+            <div className="criteria-section">
+                <label htmlFor="model">Model:</label>
+                <input
+                    id="model"
+                    value={model}
+                    onChange={(e) => setModel(e.target.value)}
+                    placeholder="Enter model name"
+                />
+            </div>
+    
+            <div className="upload-section">
+                <button
+                    className="submit-btn"
+                    onClick={handleTestBatchedOllama}
+                    disabled={loading}
+                >
+                    {loading ? "Loading..." : "Test Batched API"}
+                </button>
+            </div>
+    
+            <div className="result-section">
+                <h3>Response:</h3>
+                <div className="response-box">
+                    <ReactMarkdown>{response || "No response yet."}</ReactMarkdown>
+                </div>
+    
+                {error && (
+                    <div className="error-section">
+                        <strong>{error}</strong>
+                        <button
+                            className="upload-btn"
+                            onClick={handleTestBatchedOllama}
+                        >
+                            Regenerate response?
+                        </button>
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+    
 };
 
 export default OllamaTestPage;
