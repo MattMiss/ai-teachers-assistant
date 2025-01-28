@@ -3,9 +3,9 @@ import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 
 import formattedTestData from "../data/formattedTestData";
-//import { generatePrompt } from "../utils/ai";
 import { ollamaApiLocal, fetchOllamaResponse } from "../utils/api";
 import { batchQuestions, generatePromptForBatch } from "../utils/ai";
+import { promptText } from "../utils/prompt"; // Assuming promptText contains intro and outro defaults
 
 const OllamaTestPage = () => {
     const [response, setResponse] = useState("");
@@ -14,41 +14,27 @@ const OllamaTestPage = () => {
     const [apiUrl] = useState(ollamaApiLocal);
     const [model, setModel] = useState("deepseek-r1:1.5b");
 
-    // const handleTestOllama = async () => {
-    //     setLoading(true);
-    //     setError("");
-    //     setResponse("");
-        
-    //     const prompt = generatePrompt(formattedTestData);
+    const [criteria, setCriteria] = useState("default");
+    const [customCriteria, setCustomCriteria] = useState("");
 
-    //     await fetchOllamaResponse(
-    //         apiUrl, 
-    //         model, 
-    //         prompt, 
-    //         (newResponse) => setResponse(newResponse),  // Update response progressively
-    //         (errorMessage) => {
-    //             setError(errorMessage);  // Set the error message while keeping the response
-    //             setLoading(false);
-    //         },
-    //         () => setLoading(false) 
-    //     );
-    // }
-    
+
     const handleTestBatchedOllama = async () => {
         setLoading(true);
         setError("");
         setResponse("");
-    
+
+        const intro = criteria === "default" ? promptText.intro : customCriteria;
+
         const batchedQuestions = batchQuestions(formattedTestData.questions_and_answers, 5); // Batch size = 5 questions
         console.log("BatchedQuestions: ", batchedQuestions);
-    
+
         try {
             for (const [index, batch] of batchedQuestions.entries()) {
-                const prompt = generatePromptForBatch(batch);
-    
+                const prompt = generatePromptForBatch(batch, intro);
+
                 console.log(`Processing batch ${index + 1}/${batchedQuestions.length}:`);
                 console.log("Prompt:", prompt);
-    
+
                 await fetchOllamaResponse(
                     apiUrl,
                     model,
@@ -65,8 +51,6 @@ const OllamaTestPage = () => {
             setLoading(false);
         }
     };
-    
-    
 
     return (
         <div className="container">
@@ -76,7 +60,7 @@ const OllamaTestPage = () => {
                     Go to Main Page
                 </Link>
             </nav>
-    
+
             <div className="criteria-section">
                 <label htmlFor="model">Model:</label>
                 <input
@@ -86,7 +70,31 @@ const OllamaTestPage = () => {
                     placeholder="Enter model name"
                 />
             </div>
-    
+
+            <div className="criteria-section">
+                <h3>Criteria</h3>
+                <label htmlFor="criteriaIntro">Intro Criteria:</label>
+                <select
+                    id="criteriaIntro"
+                    value={criteria}
+                    onChange={(e) => setCriteria(e.target.value)}
+                >
+                    <option value="default">Default</option>
+                    <option value="custom">Custom</option>
+                </select>
+                {criteria === "default" && (
+                    <p className="default-text">Default Intro: {promptText.intro}</p>
+                )}
+                {criteria === "custom" && (
+                    <input
+                        type="text"
+                        value={customCriteria}
+                        onChange={(e) => setCustomCriteria(e.target.value)}
+                        placeholder="Enter custom intro"
+                    />
+                )}
+            </div>
+
             <div className="upload-section">
                 <button
                     className="submit-btn"
@@ -96,13 +104,13 @@ const OllamaTestPage = () => {
                     {loading ? "Loading..." : "Test Batched API"}
                 </button>
             </div>
-    
+
             <div className="result-section">
                 <h3>Response:</h3>
                 <div className="response-box">
                     <ReactMarkdown>{response || "No response yet."}</ReactMarkdown>
                 </div>
-    
+
                 {error && (
                     <div className="error-section">
                         <strong>{error}</strong>
@@ -117,7 +125,6 @@ const OllamaTestPage = () => {
             </div>
         </div>
     );
-    
 };
 
 export default OllamaTestPage;

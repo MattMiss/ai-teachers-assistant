@@ -23,8 +23,8 @@ export const batchQuestions = (data, batchSize) => {
     return batchedData;
 };
 
-export const generatePromptForBatch = (batch) => {
-    let prompt = `${promptText.intro}\n`;
+export const generatePromptForBatch = (batch, criteria) => {
+    let prompt = `${criteria}\n`;
 
     batch.forEach((qa) => {
         prompt += `Q: ${qa.question}\n`;
@@ -34,7 +34,7 @@ export const generatePromptForBatch = (batch) => {
         prompt += "\n";
     });
 
-    prompt += `${promptText.outro}`;
+    //prompt += `${outro}`;
     return prompt;
 };
 
