@@ -1,43 +1,85 @@
+/* General Body Styling */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 20px;
     background-color: #f4f4f4;
+    color: #333;
 }
 
-h1 {
-    text-align: center;
-}
-
+/* Container Styling */
 .container {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
+    background-color: #ffffff;
     border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Page Titles */
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #007bff;
+}
+
+/* Navigation Links */
+nav {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.nav-link {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
+}
+
+/* Form Sections */
 .upload-section,
 .criteria-section,
 .result-section {
     margin-bottom: 20px;
 }
 
+.upload-section label,
+.criteria-section label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
 .upload-section input,
 .criteria-section input {
     padding: 10px;
     width: 100%;
-    margin-top: 10px;
     font-size: 14px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding is included in width */
 }
 
+/* Buttons */
 .upload-btn,
 .submit-btn {
+    display: inline-block;
     padding: 10px 20px;
     background-color: #007bff;
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    text-align: center;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
 .upload-btn:hover,
@@ -45,10 +87,12 @@ h1 {
     background-color: #0056b3;
 }
 
+/* Table Styling */
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
+    font-size: 14px;
 }
 
 table,
@@ -65,4 +109,110 @@ td {
 
 th {
     background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+td {
+    background-color: #ffffff;
+}
+
+/* Response Section */
+/* General Markdown Styling */
+.response-box {
+    padding: 10px; /* Reduce padding around the box */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: Arial, sans-serif;
+    line-height: 1.4; /* Reduce line height for tighter spacing */
+    font-size: 14px;
+    overflow: auto;
+    white-space: pre-line; /* Preserve single line breaks but collapse extra spaces */
+}
+
+/* Headings */
+.response-box h1,
+.response-box h2,
+.response-box h3 {
+    font-size: 1.2rem;
+    margin: 10px 0; /* Reduce extra margin */
+    color: #007bff;
+}
+
+/* Paragraphs */
+.response-box p {
+    margin: 0; /* Reduce space between paragraphs */
+}
+
+/* General List Styling */
+.response-box ul,
+.response-box ol {
+    margin: 10px 0 10px 20px; /* Standard margin for lists */
+    padding-left: 20px; /* Proper indentation */
+    list-style-position: outside; /* Ensure bullet points are aligned outside the text */
+}
+
+/* Individual List Items */
+.response-box ul li,
+.response-box ol li {
+    margin: 5px 0; /* Minimal spacing between items */
+    padding-left: 0; /* Avoid extra padding */
+}
+
+
+/* Inline Code */
+.response-box code {
+    background-color: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: "Courier New", monospace;
+}
+
+/* Code Blocks */
+.response-box pre {
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-radius: 4px;
+    overflow: auto;
+    font-family: "Courier New", monospace;
+    font-size: 13px; /* Slightly smaller for code blocks */
+    line-height: 1.4; /* Adjust line height for readability */
+    margin: 10px 0;
+}
+
+/* Blockquotes */
+.response-box blockquote {
+    margin: 10px 0;
+    padding: 10px 20px;
+    border-left: 4px solid #007bff;
+    background-color: #f9f9f9;
+    font-style: italic;
+    color: #555;
+}
+
+
+/* Error Section */
+.error-section {
+    margin-top: 20px;
+    color: red;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.error-section button {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background-color: #dc3545;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.error-section button:hover {
+    background-color: #b02a37;
 }
