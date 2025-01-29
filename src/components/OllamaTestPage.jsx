@@ -14,23 +14,23 @@ const OllamaTestPage = () => {
     const [apiUrl] = useState(ollamaApiLocal);
     const [model, setModel] = useState("deepseek-r1:1.5b");
 
-    const [criteria, setCriteria] = useState("default");
+    const [criteriaType, setCriteria] = useState("default");
     const [customCriteria, setCustomCriteria] = useState("");
 
 
-    const handleTestBatchedOllama = async () => {
+    const handleTestAPI = async () => {
         setLoading(true);
         setError("");
         setResponse("");
 
-        const intro = criteria === "default" ? promptText.intro : customCriteria;
+        const criteria = criteriaType === "default" ? promptText.criteria : customCriteria;
 
         const batchedQuestions = batchQuestions(formattedTestData.questions_and_answers, 5); // Batch size = 5 questions
         console.log("BatchedQuestions: ", batchedQuestions);
 
         try {
             for (const [index, batch] of batchedQuestions.entries()) {
-                const prompt = generatePromptForBatch(batch, intro);
+                const prompt = generatePromptForBatch(batch, criteria);
 
                 console.log(`Processing batch ${index + 1}/${batchedQuestions.length}:`);
                 console.log("Prompt:", prompt);
@@ -72,20 +72,19 @@ const OllamaTestPage = () => {
             </div>
 
             <div className="criteria-section">
-                <h3>Criteria</h3>
-                <label htmlFor="criteriaIntro">Intro Criteria:</label>
+                <label htmlFor="criteriaIntro">Criteria:</label>
                 <select
                     id="criteriaIntro"
-                    value={criteria}
+                    value={criteriaType}
                     onChange={(e) => setCriteria(e.target.value)}
                 >
                     <option value="default">Default</option>
                     <option value="custom">Custom</option>
                 </select>
-                {criteria === "default" && (
-                    <p className="default-text">Default Intro: {promptText.intro}</p>
+                {criteriaType === "default" && (
+                    <p className="default-text">Default Criteria: {promptText.criteria}</p>
                 )}
-                {criteria === "custom" && (
+                {criteriaType === "custom" && (
                     <input
                         type="text"
                         value={customCriteria}
@@ -98,10 +97,10 @@ const OllamaTestPage = () => {
             <div className="upload-section">
                 <button
                     className="submit-btn"
-                    onClick={handleTestBatchedOllama}
+                    onClick={handleTestAPI}
                     disabled={loading}
                 >
-                    {loading ? "Loading..." : "Test Batched API"}
+                    {loading ? "Analyzing..." : "Analyze Student Answers"}
                 </button>
             </div>
 
@@ -116,7 +115,7 @@ const OllamaTestPage = () => {
                         <strong>{error}</strong>
                         <button
                             className="upload-btn"
-                            onClick={handleTestBatchedOllama}
+                            onClick={handleTestAPI}
                         >
                             Regenerate response?
                         </button>

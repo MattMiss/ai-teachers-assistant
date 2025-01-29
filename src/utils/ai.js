@@ -34,7 +34,21 @@ export const generatePromptForBatch = (batch, criteria) => {
         prompt += "\n";
     });
 
-    //prompt += `${outro}`;
+    return prompt;
+};
+
+export const generateFormattedPromptForBatch = (batch, criteria) => {
+    let prompt = `${criteria}\n`;
+
+    batch.forEach((qa) => {
+        prompt += `Q: ${qa.question}\n`;
+        qa.answers.forEach((answer, idx) => {
+            prompt += `A${idx + 1} (User: ${answer.userId}): ${answer.response}\n`;
+        });
+        prompt += "\n";
+    });
+    
+    prompt += `${promptText.end}`;
     return prompt;
 };
 
