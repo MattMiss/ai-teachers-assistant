@@ -1,17 +1,49 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import Papa from "papaparse";
+import "../index.css"; // Import the CSS file
 
 const MainPage = () => {
     const [criteria, setCriteria] = useState("");
     const [file, setFile] = useState(null);
-
-    useEffect(() => {
-        console.log(file);
-    }, [file]);
+    const [parsedData, setParsedData] = useState([]);
+    const [error, setError] = useState("");
 
     const handleFileUpload = (event) => {
-        setFile(event.target.files[0]);
-        alert(`File uploaded: ${event.target.files[0]?.name || "No file selected"}`);
+        const uploadedFile = event.target.files[0];
+        setParsedData([]); // Clear previous data
+        setError(""); // Clear previous error
+
+        if (uploadedFile && uploadedFile.type === "text/csv") {
+            setFile(uploadedFile);
+            parseCSV(uploadedFile);
+        } else {
+            setFile(null);
+            showError("Please upload a valid CSV file.");
+        }
+    };
+
+    const parseCSV = (file) => {
+        Papa.parse(file, {
+            complete: (result) => {
+                if (result.data && result.data.length > 0) {
+                    setParsedData(result.data); // Store parsed JSON data
+                } else {
+                    showError("The CSV file is empty or improperly formatted.");
+                }
+            },
+            header: true, // Ensures the first row is used as keys
+            skipEmptyLines: true,
+            error: (error) => {
+                showError("Error parsing CSV file: " + error.message);
+            }
+        });
+    };
+
+    const showError = (message) => {
+        setError(message);
+        // Clear the file input to allow re-upload
+        document.getElementById("file-upload").value = "";
     };
 
     const handleCriteriaSubmit = () => {
@@ -40,10 +72,17 @@ const MainPage = () => {
                     accept=".csv"
                     onChange={handleFileUpload}
                 />
-                <button className="upload-btn" onClick={() => alert("Placeholder for file upload logic")}>
-                    Upload File
-                </button>
             </div>
+
+            {/* Error Pop-up */}
+            {error && (
+                <div className="error-popup">
+                    <div className="error-content">
+                        <span className="close-btn" onClick={() => setError("")}>&times;</span>
+                        <p>{error}</p>
+                    </div>
+                </div>
+            )}
 
             {/* Criteria Input Section */}
             <div className="criteria-section">
@@ -63,27 +102,28 @@ const MainPage = () => {
             {/* Results Section */}
             <div className="result-section">
                 <h2>AI Feedback Results</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Student Name</th>
-                            <th>Answer</th>
-                            <th>AI Feedback</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Alice</td>
-                            <td>The Industrial Revolution changed society by...</td>
-                            <td>Social changes were a key theme.</td>
-                        </tr>
-                        <tr>
-                            <td>Bob</td>
-                            <td>The key factors of the Industrial Revolution were...</td>
-                            <td>Mechanization and urbanization were critical.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                {parsedData.length > 0 ? (
+                    <table>
+                        <thead>
+                            <tr>
+                                {Object.keys(parsedData[0]).map((key) => (
+                                    <th key={key}>{key}</th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {parsedData.map((row, index) => (
+                                <tr key={index}>
+                                    {Object.values(row).map((value, idx) => (
+                                        <td key={idx}>{value}</td>
+                                    ))}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                ) : (
+                    <p>No data to display.</p>
+                )}
             </div>
         </div>
     );

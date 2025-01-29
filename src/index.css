@@ -63,7 +63,8 @@ nav {
     margin-top: 5px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    box-sizing: border-box; /* Ensures padding is included in width */
+    box-sizing: border-box;
+    /* Ensures padding is included in width */
 }
 
 /* Buttons */
@@ -119,15 +120,18 @@ td {
 /* Response Section */
 /* General Markdown Styling */
 .response-box {
-    padding: 10px; /* Reduce padding around the box */
+    padding: 10px;
+    /* Reduce padding around the box */
     background-color: #f9f9f9;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-family: Arial, sans-serif;
-    line-height: 1.4; /* Reduce line height for tighter spacing */
+    line-height: 1.4;
+    /* Reduce line height for tighter spacing */
     font-size: 14px;
     overflow: auto;
-    white-space: pre-line; /* Preserve single line breaks but collapse extra spaces */
+    white-space: pre-line;
+    /* Preserve single line breaks but collapse extra spaces */
 }
 
 /* Headings */
@@ -135,28 +139,35 @@ td {
 .response-box h2,
 .response-box h3 {
     font-size: 1.2rem;
-    margin: 10px 0; /* Reduce extra margin */
+    margin: 10px 0;
+    /* Reduce extra margin */
     color: #007bff;
 }
 
 /* Paragraphs */
 .response-box p {
-    margin: 0; /* Reduce space between paragraphs */
+    margin: 0;
+    /* Reduce space between paragraphs */
 }
 
 /* General List Styling */
 .response-box ul,
 .response-box ol {
-    margin: 10px 0 10px 20px; /* Standard margin for lists */
-    padding-left: 20px; /* Proper indentation */
-    list-style-position: outside; /* Ensure bullet points are aligned outside the text */
+    margin: 10px 0 10px 20px;
+    /* Standard margin for lists */
+    padding-left: 20px;
+    /* Proper indentation */
+    list-style-position: outside;
+    /* Ensure bullet points are aligned outside the text */
 }
 
 /* Individual List Items */
 .response-box ul li,
 .response-box ol li {
-    margin: 5px 0; /* Minimal spacing between items */
-    padding-left: 0; /* Avoid extra padding */
+    margin: 5px 0;
+    /* Minimal spacing between items */
+    padding-left: 0;
+    /* Avoid extra padding */
 }
 
 
@@ -175,8 +186,10 @@ td {
     border-radius: 4px;
     overflow: auto;
     font-family: "Courier New", monospace;
-    font-size: 13px; /* Slightly smaller for code blocks */
-    line-height: 1.4; /* Adjust line height for readability */
+    font-size: 13px;
+    /* Slightly smaller for code blocks */
+    line-height: 1.4;
+    /* Adjust line height for readability */
     margin: 10px 0;
 }
 
@@ -215,4 +228,123 @@ td {
 
 .error-section button:hover {
     background-color: #b02a37;
+}
+
+
+
+
+
+/* index.css */
+.error-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ffebee;
+    border: 1px solid #ffcdd2;
+    border-radius: 5px;
+    padding: 15px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.error-content {
+    display: flex;
+    align-items: center;
+}
+
+.error-content p {
+    margin: 0;
+    color: #c62828;
+    font-weight: bold;
+}
+
+.close-btn {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #c62828;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.close-btn:hover {
+    color: #b71c1c;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.upload-section,
+.criteria-section,
+.result-section {
+    margin-bottom: 20px;
+}
+
+.upload-section label,
+.criteria-section label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.upload-section input[type="file"],
+.criteria-section input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.submit-btn,
+.upload-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.submit-btn:hover,
+.upload-btn:hover {
+    background-color: #0056b3;
+}
+
+.result-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.result-section th,
+.result-section td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.result-section th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+.result-section tr:hover {
+    background-color: #f1f1f1;
+}
+
+.nav-link {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nav-link:hover {
+    text-decoration: underline;
 }
