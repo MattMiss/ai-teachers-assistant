@@ -56,22 +56,21 @@ const MainPage = () => {
 
     // Step 3: Remove identifying columns and anonymize
     const sanitizeData = (data) => {
-        const identifyingColumns = ["Name", "Student ID"]; // Columns to anonymize
+        const identifyingColumns = ["Name", "Student ID", "sis_id", "root_account", "section", "section_id", "section_sis_id"];
         const tempData = [];
         const idMapping = [];
-
+        const questionsMap = {};
+    
         data.forEach((row, index) => {
             const tempID = `temp-${index + 1}`;
-
-            // Create anonymized row
             const anonymizedRow = { tempID };
+    
             Object.keys(row).forEach((key) => {
                 if (!identifyingColumns.includes(key)) {
                     anonymizedRow[key] = row[key];
                 }
             });
-
-            // Save mapping for reattachment
+    
             idMapping.push({
                 tempID,
                 original: identifyingColumns.reduce((acc, col) => {
@@ -79,14 +78,44 @@ const MainPage = () => {
                     return acc;
                 }, {}),
             });
-
+    
             tempData.push(anonymizedRow);
         });
-
-        setParsedData(data); // Store original parsed data
-        setAnonymizedData(tempData); // Store anonymized data for AI processing
-        setMapping(idMapping); // Store mapping for reattachment
+    
+        // Transform the data into formattedTestData.js structure
+        const formattedData = {
+            questions_and_answers: [],
+        };
+    
+        tempData.forEach((row) => {
+            Object.keys(row).forEach((key) => {
+                // Identify if the key is a question (it usually contains a long text prompt)
+                if (key.match(/^\d+/)) {
+                    const questionText = key;
+                    const answerText = row[key];
+    
+                    if (!questionsMap[questionText]) {
+                        questionsMap[questionText] = {
+                            question: questionText,
+                            answers: [],
+                        };
+                    }
+    
+                    questionsMap[questionText].answers.push({
+                        userId: row.tempID,
+                        response: answerText,
+                    });
+                }
+            });
+        });
+    
+        formattedData.questions_and_answers = Object.values(questionsMap);
+    
+        setParsedData(data);
+        setAnonymizedData(formattedData); // Store formatted data
+        setMapping(idMapping);
     };
+    
 
     // Step 4: Send anonymized data and criteria to AI
     const sendToAI = async () => {
@@ -104,7 +133,7 @@ const MainPage = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    model: "llama3.2", // Replace with the correct model name if needed
+                    model: "llama3.2", 
                     prompt,
                 }),
             });
@@ -135,15 +164,7 @@ const MainPage = () => {
         }
     };
 
-    // Step 5: Generate AI prompt
-    const generatePrompt = (data, criteria) => {
-        let prompt = `Based on the following criteria: "${criteria}", generate feedback for each student's response.\n\n`;
-        data.forEach((row) => {
-            prompt += `Student (ID: ${row.tempID}): ${row.Answer || "No answer provided"}\n`;
-        });
-        prompt += "\nProvide concise feedback for each response.";
-        return prompt;
-    };
+    // Step 5: Generate AI prompt(From ai.js)
 
     // Step 6: Parse AI Response
     const parseAIResponse = (responseText) => {

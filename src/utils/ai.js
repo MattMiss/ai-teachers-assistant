@@ -1,17 +1,17 @@
 import { promptText } from "./prompt";
 
-export const generatePrompt = (data) => {
-    let prompt = `${promptText.intro}\n\n`;
+export const generatePrompt = (data, criteria) => {
+    let prompt = `Based on the following criteria: "${criteria}", analyze the student responses and provide feedback.\n\n`;
 
     data.questions_and_answers.forEach((qa) => {
         prompt += `Q: ${qa.question}\n`;
         qa.answers.forEach((answer, idx) => {
-            prompt += `A${idx + 1} (User: ${answer.userId}): ${answer.response}\n`;
+            prompt += `A${idx + 1} (Student ${answer.userId}): ${answer.response}\n`;
         });
         prompt += "\n";
     });
-    
-    prompt += `${promptText.outro}`;
+
+    prompt += "Provide a summary of the key insights and common themes from these answers.";
     return prompt;
 };
 
